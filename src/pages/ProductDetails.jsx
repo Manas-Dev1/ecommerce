@@ -32,7 +32,7 @@ function ProductDetails() {
 
   return (
     <div className="bg-amber-50">
-      <div className="mx-auto grid max-w-5xl gap-8 rounded-lg px-4 py-2 md:grid-cols-2">
+      <div className="mx-auto grid max-w-5xl gap-8 rounded-lg px-4 py-8 md:grid-cols-2">
         {/* Product Image */}
         <div className="flex items-center justify-center">
           <img

@@ -1,19 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 
 function ProductCard({ product }) {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="max-w-2xs min-w-2xs ring ring-black/30 p-3 flex flex-col gap-0 rounded-md shadow-sm shadow-black/50 hover:shadow-md"
+      className="group flex min-w-0 flex-col rounded-xl border border-stone-200 bg-white p-3 transition duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900"
     >
-      <img src={product.image} alt={product.title} className="aspect-square" />
-
-      <h2 className="text-md mt-2 ">{product.title}</h2>
-
-      <p className="font-bold text-lg mt-auto">${product.price}</p>
-
-      {/* <p className="text-gray-700">{product.category}</p> */}
+      <div className="flex aspect-square items-center justify-center rounded-lg bg-stone-50 p-4">
+        <img
+          src={product.image}
+          alt={product.title}
+          loading="lazy"
+          className="aspect-square w-full object-contain transition duration-200 group-hover:scale-105"
+        />
+      </div>
+      <h2 className="mt-3 line-clamp-2 min-h-12 text-sm font-medium leading-6 text-stone-800">
+        {product.title}
+      </h2>
+      <p className="mt-2 text-lg font-bold text-stone-950">
+        ${product.price.toFixed(2)}
+      </p>
     </Link>
   );
 }
