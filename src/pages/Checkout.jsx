@@ -37,12 +37,22 @@ function Checkout() {
       const response = await fetch(
         `https://api.postalpincode.in/pincode/${pincode}`,
       );
+      if (!response.ok) throw new Error("PIN lookup failed");
 
       const data = await response.json();
 
       if (requestId !== pincodeRequestId.current) return;
 
-      if (data[0].Status !== "Success") {
+      const result = Array.isArray(data) ? data[0] : null;
+      const office = Array.isArray(result?.PostOffice)
+        ? result.PostOffice[0]
+        : null;
+
+      if (
+        result?.Status !== "Success" ||
+        typeof office?.Name !== "string" ||
+        typeof office?.State !== "string"
+      ) {
         setError("Invalid PIN code");
 
         setFormData((prev) => ({
@@ -53,8 +63,6 @@ function Checkout() {
 
         return;
       }
-
-      const office = data[0].PostOffice[0];
 
       setFormData((prev) => ({
         ...prev,
@@ -107,11 +115,23 @@ function Checkout() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    const name = formData.name.trim();
+    const address = formData.address.trim();
+    if (!name || address.length < 10) {
+      setError(
+        !name
+          ? "Please enter your full name"
+          : "Please enter an address of at least 10 characters",
+      );
+      return;
+    }
+
     if (loading || error || !formData.city || !formData.state) {
       setError(error || "Please wait for a valid PIN code to be verified");
       return;
     }
 
+    setFormData((prev) => ({ ...prev, name, address }));
     setShowSuccess(true);
     clearCart();
     window.setTimeout(() => navigate("/"), 2000);

@@ -8,18 +8,37 @@ export function CartProvider({ children }) {
   const [cartPrompt, setCartPrompt] = useState(null);
   const [cart, setCart] = useState(() => {
     try {
+      if (typeof window === "undefined") return [];
       const savedCart = localStorage.getItem("cart");
       const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+      if (!Array.isArray(parsedCart)) return [];
 
-      return Array.isArray(parsedCart)
-        ? parsedCart.map((product) => ({
-            ...product,
-            quantity: Math.min(
-              MAX_PRODUCT_QUANTITY,
-              Math.max(1, Number(product.quantity) || 1),
-            ),
-          }))
-        : [];
+      const validProducts = parsedCart.filter(
+        (product) =>
+          product &&
+          (typeof product.id === "string" || typeof product.id === "number") &&
+          typeof product.title === "string" &&
+          Number.isFinite(Number(product.price)) &&
+          Number(product.price) >= 0,
+      );
+
+      return validProducts.reduce((normalized, product) => {
+        const quantity = Number(product.quantity);
+        const safeQuantity = Math.min(
+          MAX_PRODUCT_QUANTITY,
+          Math.max(1, Number.isFinite(quantity) ? Math.floor(quantity) : 1),
+        );
+        const existing = normalized.find((item) => item.id === product.id);
+        if (existing) {
+          existing.quantity = Math.min(
+            MAX_PRODUCT_QUANTITY,
+            existing.quantity + safeQuantity,
+          );
+        } else {
+          normalized.push({ ...product, quantity: safeQuantity });
+        }
+        return normalized;
+      }, []);
     } catch {
       return [];
     }
@@ -27,7 +46,13 @@ export function CartProvider({ children }) {
 
   // Save cart whenever cart changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }
+    } catch {
+      // Storage can be unavailable or full; the in-memory cart still works.
+    }
   }, [cart]);
 
   function addToCart(product, quantity = 1) {
@@ -69,12 +94,9 @@ export function CartProvider({ children }) {
   }
 
   function updateQuantity(id, quantity) {
-    const amount = Math.floor(Number(quantity));
-
-    if (amount <= 0) {
-      removeFromCart(id);
-      return;
-    }
+    const numericQuantity = Number(quantity);
+    if (!Number.isFinite(numericQuantity) || numericQuantity < 1) return;
+    const amount = Math.floor(numericQuantity);
 
     if (amount > MAX_PRODUCT_QUANTITY) {
       const currentQuantity =

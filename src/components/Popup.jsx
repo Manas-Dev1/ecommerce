@@ -1,4 +1,56 @@
+import { useEffect, useRef } from "react";
+
 function Popup({ prompt, onProceed, onCancel }) {
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
+  const onCancelRef = useRef(onCancel);
+
+  useEffect(() => {
+    onCancelRef.current = onCancel;
+  }, [onCancel]);
+
+  useEffect(() => {
+    if (!prompt) return undefined;
+
+    previousFocusRef.current = document.activeElement;
+    const dialog = dialogRef.current;
+    const focusable = dialog?.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    (prompt.canProceed ? focusable?.[1] : focusable?.[0])?.focus();
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCancelRef.current();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const items = dialog?.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!items?.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (previousFocusRef.current instanceof HTMLElement) {
+        previousFocusRef.current.focus();
+      }
+    };
+  }, [prompt]);
+
   if (!prompt) return null;
 
   return (
@@ -8,6 +60,7 @@ function Popup({ prompt, onProceed, onCancel }) {
     >
       <section
         role="alertdialog"
+        ref={dialogRef}
         aria-modal="true"
         aria-labelledby="cart-limit-title"
         aria-describedby="cart-limit-message"
@@ -30,7 +83,6 @@ function Popup({ prompt, onProceed, onCancel }) {
           </button>
           <button
             type="button"
-            autoFocus
             disabled={!prompt.canProceed}
             onClick={onProceed}
             className="rounded-md bg-black px-4 py-2 text-white hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
