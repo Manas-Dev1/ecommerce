@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { useCart } from "../context/CartContext";
+import Popup from "../components/Popup";
 
 function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: product,
@@ -12,7 +14,13 @@ function ProductDetails() {
     loading,
   } = useFetch(`https://fakestoreapi.com/products/${id}`);
 
-  const { addToCart, cart } = useCart();
+  const {
+    addToCart,
+    cart,
+    cartPrompt,
+    cancelCartPrompt,
+    proceedWithCartPrompt,
+  } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   if (loading) {
@@ -53,7 +61,6 @@ function ProductDetails() {
           {cartQuantity > 0 && (
             <p className="text-sm text-gray-600">In cart: {cartQuantity}</p>
           )}
-
           <div>
             <span className="font-semibold">⭐</span> {product.rating?.rate} / 5
             ({product.rating?.count})
@@ -69,6 +76,7 @@ function ProductDetails() {
               id="product-quantity"
               type="number"
               min="1"
+              max="10"
               step="1"
               value={quantity}
               onChange={(event) =>
@@ -76,16 +84,25 @@ function ProductDetails() {
               }
               className="w-20 rounded-md border border-gray-300 px-3 py-2"
             />
-            <Link
-              to="/cart"
-              onClick={() => addToCart(product, quantity)}
+            <button
+              type="button"
+              onClick={() => {
+                if (addToCart(product, quantity)) navigate("/cart");
+              }}
               className="rounded-md bg-black px-6 py-3 text-center text-amber-50 transition hover:bg-gray-800"
             >
               Add to Cart
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+      <Popup
+        prompt={cartPrompt}
+        onCancel={cancelCartPrompt}
+        onProceed={() => {
+          if (proceedWithCartPrompt()) navigate("/cart");
+        }}
+      />
     </div>
   );
 }

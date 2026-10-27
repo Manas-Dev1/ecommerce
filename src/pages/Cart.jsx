@@ -2,9 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Summary from "../components/Summry";
+import Popup from "../components/Popup";
 
 function Cart() {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const {
+    cart,
+    cartPrompt,
+    cancelCartPrompt,
+    proceedWithCartPrompt,
+    removeFromCart,
+    updateQuantity,
+  } = useCart();
 
   return (
     <div className="mx-auto max-w-3xl p-3 md:p-6">
@@ -72,6 +80,7 @@ function Cart() {
                       id={`quantity-${product.id}`}
                       type="number"
                       min="1"
+                      max="10"
                       step="1"
                       value={product.quantity}
                       onChange={(event) => {
@@ -114,6 +123,11 @@ function Cart() {
           </Link>
         </>
       )}
+      <Popup
+        prompt={cartPrompt}
+        onCancel={cancelCartPrompt}
+        onProceed={proceedWithCartPrompt}
+      />
     </div>
   );
 }

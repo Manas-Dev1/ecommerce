@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Summary from "../components/Summry";
 
@@ -13,8 +14,13 @@ function Checkout() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { cart } = useCart();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const { cart, clearCart } = useCart();
+  const navigate = useNavigate();
+  const pincodeRequestId = useRef(0);
   async function getPincodeDetails(pincode) {
+    const requestId = ++pincodeRequestId.current;
+
     if (!/^[1-9][0-9]{5}$/.test(pincode)) {
       setFormData((prev) => ({
         ...prev,
@@ -33,6 +39,8 @@ function Checkout() {
       );
 
       const data = await response.json();
+
+      if (requestId !== pincodeRequestId.current) return;
 
       if (data[0].Status !== "Success") {
         setError("Invalid PIN code");
@@ -54,9 +62,11 @@ function Checkout() {
         state: office.State,
       }));
     } catch (error) {
-      setError("Unable to verify PIN code");
+      if (requestId === pincodeRequestId.current) {
+        setError("Unable to verify PIN code");
+      }
     } finally {
-      setLoading(false);
+      if (requestId === pincodeRequestId.current) setLoading(false);
     }
   }
 
@@ -74,6 +84,8 @@ function Checkout() {
       if (onlyNumbers.length === 6) {
         getPincodeDetails(onlyNumbers);
       } else {
+        pincodeRequestId.current += 1;
+        setLoading(false);
         setError("");
 
         setFormData((prev) => ({
@@ -95,11 +107,18 @@ function Checkout() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    console.log("Order details:", formData);
+    if (loading || error || !formData.city || !formData.state) {
+      setError(error || "Please wait for a valid PIN code to be verified");
+      return;
+    }
+
+    setShowSuccess(true);
+    clearCart();
+    window.setTimeout(() => navigate("/"), 2000);
   }
 
   return (
-    <div className="min-h-scree px-4 py-10">
+    <div className="min-h-screen px-4 py-10">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
@@ -225,13 +244,38 @@ function Checkout() {
             </div>
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition"
+              disabled={cart.length === 0 || showSuccess}
+              className="w-full rounded-lg bg-black py-3 font-medium text-white transition enabled:hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Place Order
             </button>
           </form>
         </div>
       </div>
+
+      {showSuccess && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="checkout-success-title"
+        >
+          <div className="w-full max-w-sm rounded-xl bg-amber-50 p-6 text-center shadow-xl">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700">
+              OK
+            </div>
+            <h2
+              id="checkout-success-title"
+              className="text-xl font-semibold text-gray-900"
+            >
+              Order placed successfully!
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Redirecting you to the home page...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
