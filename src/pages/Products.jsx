@@ -1,5 +1,6 @@
 ﻿import useFetch from "../hooks/useFetch";
 import ProductCard from "../components/ProductCard";
+import bannerImage from "../assets/EasyCart_ Shopping Made Simple.png";
 
 function Products() {
   const { data, error, loading } = useFetch(
@@ -30,7 +31,7 @@ function Products() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
-      <img src="src\assets\EasyCart_ Shopping Made Simple.png"></img>
+      <img src={bannerImage} alt="EasyCart: Shopping Made Simple" />
       <div className="mb-2 text-center mt-5 text-2xl md:text-4xl font-bold tracking-tight text-stone-900">
         Shop our products
       </div>
