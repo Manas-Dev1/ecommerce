@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import ProductCard from "../components/ProductCard";
+import bannerImage from "../assets/EasyCart_ Shopping Made Simple.png";
 
 function Products() {
   const { data, error, loading } = useFetch(
@@ -40,6 +41,8 @@ function Products() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
+      <img src={bannerImage} alt="EasyCart: Shopping Made Simple" />
+
       <div className="mb-2 mt-5 text-center text-2xl font-bold tracking-tight text-stone-900 md:text-4xl">
         Shop our products
       </div>

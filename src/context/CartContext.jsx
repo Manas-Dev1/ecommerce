@@ -64,7 +64,7 @@ export function CartProvider({ children }) {
       setCartPrompt({
         message:
           available > 0
-            ? `Only ${available} more of this product can be added as per current stock. Add ${available}?`
+            ? `Only ${available} of this product can be added as per current stock. Add ${available}?`
             : QUANTITY_LIMIT_MESSAGE,
         action: { type: "add", product, quantity: available },
         canProceed: available > 0,
@@ -105,7 +105,7 @@ export function CartProvider({ children }) {
       setCartPrompt({
         message:
           available > 0
-            ? `Only ${available} more can be added to reach the 10 item limit. Set quantity to 10?`
+            ? `Only ${available} can be added to reach the 10 item limit. Set quantity to 10?`
             : QUANTITY_LIMIT_MESSAGE,
         action: { type: "quantity", id, quantity: MAX_PRODUCT_QUANTITY },
         canProceed: available > 0,

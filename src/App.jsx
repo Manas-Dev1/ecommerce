@@ -1,16 +1,12 @@
 import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
-
 import { Cart, CheckOut, ProductDetails, Products } from "./pages/index";
-import bannerImage from "./assets/EasyCart_ Shopping Made Simple.png";
-
 import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <>
       <Navbar />
-      <img src={bannerImage} alt="EasyCart: Shopping Made Simple" />
       <Routes>
         <Route path="/" element={<Products />} />
 

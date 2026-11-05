@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Summary from "../components/Summry";
@@ -18,6 +18,16 @@ function Checkout() {
   const { cart, clearCart } = useCart();
   const navigate = useNavigate();
   const pincodeRequestId = useRef(0);
+  const redirectTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current !== null) {
+        window.clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
+
   async function getPincodeDetails(pincode) {
     const requestId = ++pincodeRequestId.current;
 
@@ -69,7 +79,7 @@ function Checkout() {
         city: office.Name,
         state: office.State,
       }));
-    } catch (error) {
+    } catch {
       if (requestId === pincodeRequestId.current) {
         setError("Unable to verify PIN code");
       }
@@ -115,6 +125,11 @@ function Checkout() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (cart.length === 0) {
+      setError("Your cart is empty. Add items before placing an order.");
+      return;
+    }
+
     const name = formData.name.trim();
     const address = formData.address.trim();
     if (!name || address.length < 10) {
@@ -134,7 +149,7 @@ function Checkout() {
     setFormData((prev) => ({ ...prev, name, address }));
     setShowSuccess(true);
     clearCart();
-    window.setTimeout(() => navigate("/"), 2000);
+    redirectTimerRef.current = window.setTimeout(() => navigate("/"), 2000);
   }
 
   return (
