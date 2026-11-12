@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import ProductCard from "../components/ProductCard";
-import bannerImage from "../assets/EasyCart_ Shopping Made Simple.png";
+import bannerImage from "../assets/EasyCart_ Shopping Made Simple.webp";
 
 function Products() {
   const { data, error, loading } = useFetch(
