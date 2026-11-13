@@ -21,7 +21,7 @@ body {
 }
 
 .products-grid-enter {
-  animation: products-grid-enter 1200ms ease-in-out both;
+  animation: products-grid-enter 500ms ease-in-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
