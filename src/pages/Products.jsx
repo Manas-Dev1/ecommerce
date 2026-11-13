@@ -138,7 +138,10 @@ function Products() {
           })}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div
+        key={selectedCategory}
+        className="products-grid-enter grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+      >
         {visibleProducts.map((product) => (
           <ProductCard product={product} key={product.id} />
         ))}

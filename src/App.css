@@ -8,6 +8,28 @@ body {
   margin: 0;
 }
 
+@keyframes products-grid-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.products-grid-enter {
+  animation: products-grid-enter 1200ms ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .products-grid-enter {
+    animation: none;
+  }
+}
+
 /* Remove arrows/spinners for Chrome, Safari, Edge, and Opera */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
