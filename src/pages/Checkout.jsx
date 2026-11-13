@@ -132,11 +132,13 @@ function Checkout() {
 
     const name = formData.name.trim();
     const address = formData.address.trim();
-    if (!name || address.length < 10) {
+    if (!name || address.length < 10 || address.length > 350) {
       setError(
         !name
           ? "Please enter your full name"
-          : "Please enter an address of at least 10 characters",
+          : address.length < 10
+            ? "Please enter an address of at least 10 characters"
+            : "Address must be 350 characters or fewer",
       );
       return;
     }
@@ -197,6 +199,7 @@ function Checkout() {
                 id="address"
                 name="address"
                 minLength={10}
+                maxLength={350}
                 required
                 rows={4}
                 value={formData.address}
