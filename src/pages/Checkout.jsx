@@ -57,10 +57,11 @@ function Checkout() {
       const office = Array.isArray(result?.PostOffice)
         ? result.PostOffice[0]
         : null;
+      const city = office?.District;
 
       if (
         result?.Status !== "Success" ||
-        typeof office?.Name !== "string" ||
+        typeof city !== "string" ||
         typeof office?.State !== "string"
       ) {
         setError("Invalid PIN code");
@@ -76,7 +77,7 @@ function Checkout() {
 
       setFormData((prev) => ({
         ...prev,
-        city: office.Name,
+        city,
         state: office.State,
       }));
     } catch {
@@ -155,16 +156,19 @@ function Checkout() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-10">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-[60vh] px-3 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Checkout</h1>
 
           <p className="mt-2 text-gray-500">Enter your delivery details</p>
         </div>
 
-        <div className=" rounded-xl shadow-sm border p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.9fr)] lg:gap-8">
+          <div className="order-first lg:order-last">
+            <Summary showItems />
+          </div>
+          <form onSubmit={handleSubmit} className="order-last space-y-6 rounded-xl border p-4 shadow-sm sm:p-6 md:order-first md:p-8">
             <div>
               <label
                 htmlFor="name"
@@ -244,7 +248,7 @@ function Checkout() {
                   htmlFor="city"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  City / Post Office
+                  City
                 </label>
 
                 <input
@@ -276,9 +280,6 @@ function Checkout() {
                 placeholder="State will be detected"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 bg-gray-100 outline-none"
               />
-            </div>
-            <div>
-              <Summary />
             </div>
             <button
               type="submit"
@@ -314,7 +315,7 @@ function Checkout() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

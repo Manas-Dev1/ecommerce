@@ -73,22 +73,33 @@ function Popup({ prompt, onProceed, onCancel }) {
         <p id="cart-limit-message" className="mt-3 text-stone-700">
           {prompt.message}
         </p>
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-stone-300 px-4 py-2 text-stone-700 hover:bg-stone-100"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={!prompt.canProceed}
-            onClick={onProceed}
-            className="rounded-md bg-black px-4 py-2 text-white hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
-          >
-            Proceed
-          </button>
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          {prompt.canProceed ? (
+            <>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="min-h-11 rounded-md border border-stone-300 px-4 py-2 text-stone-700 hover:bg-stone-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={onProceed}
+                className="min-h-11 rounded-md bg-black px-4 py-2 text-white hover:bg-stone-800"
+              >
+                Proceed
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="min-h-11 rounded-md bg-black px-4 py-2 text-white hover:bg-stone-800"
+            >
+              Okay
+            </button>
+          )}
         </div>
       </section>
     </div>
